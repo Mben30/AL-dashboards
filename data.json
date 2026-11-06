@@ -1,0 +1,119 @@
+{
+ "updatedUtc": "2026-11-06T21:56:27.557359+00:00",
+ "demo": false,
+ "failures": [],
+ "stocks": {
+  "AI.PA": {
+   "stock": {
+    "ticker": "AI.PA",
+    "name": "Air Liquide",
+    "currency": "EUR"
+   },
+   "last": {
+    "date": "2026-11-06",
+    "price": 187.78,
+    "change": -1.94,
+    "changePct": -1.023
+   },
+   "range52": {
+    "low": 141.53,
+    "high": 189.72
+   },
+   "streak": {
+    "up": 0,
+    "down": 1
+   },
+   "liveSession": false,
+   "nextResults": [
+    {
+     "date": "2027-02-19",
+     "event": "2026 Annual Results",
+     "source": "official"
+    }
+   ],
+   "market": "Euronext Paris",
+   "calendar": "https://www.airliquide.com/investors/events-calendar"
+  },
+  "APD": {
+   "stock": {
+    "ticker": "APD",
+    "name": "Air Products",
+    "currency": "USD"
+   },
+   "last": {
+    "date": "2026-11-06",
+    "price": 304.84,
+    "change": -4.65,
+    "changePct": -1.502
+   },
+   "range52": {
+    "low": 230.76,
+    "high": 318.87
+   },
+   "streak": {
+    "up": 0,
+    "down": 2
+   },
+   "liveSession": false,
+   "nextResults": [
+    {
+     "date": "2027-01-29",
+     "event": "Results (date estimated by Yahoo Finance)",
+     "source": "yahoo"
+    }
+   ],
+   "market": "New York (NYSE / Nasdaq)",
+   "calendar": "https://finance.yahoo.com/quote/APD/"
+  },
+  "SU.PA": {
+   "stock": {
+    "ticker": "SU.PA",
+    "name": "Schneider Electric",
+    "currency": "EUR"
+   },
+   "last": {
+    "date": "2026-11-06",
+    "price": 228.65,
+    "change": 0.8,
+    "changePct": 0.351
+   },
+   "range52": {
+    "low": 222.3,
+    "high": 311.0
+   },
+   "streak": {
+    "up": 1,
+    "down": 0
+   },
+   "liveSession": false,
+   "nextResults": [],
+   "market": "Euronext Paris",
+   "calendar": "https://www.se.com/ww/en/about-us/investor-relations/financial-calendar-and-events"
+  },
+  "ECL": {
+   "stock": {
+    "ticker": "ECL",
+    "name": "Ecolab",
+    "currency": "USD"
+   },
+   "last": {
+    "date": "2026-11-06",
+    "price": 300.68,
+    "change": -5.15,
+    "changePct": -1.684
+   },
+   "range52": {
+    "low": 245.73,
+    "high": 315.01
+   },
+   "streak": {
+    "up": 0,
+    "down": 2
+   },
+   "liveSession": false,
+   "nextResults": [],
+   "market": "New York (NYSE / Nasdaq)",
+   "calendar": "https://finance.yahoo.com/quote/ECL/"
+  }
+ }
+}

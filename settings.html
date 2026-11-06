@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alert settings</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M6 21l6-6 5 4 9-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.12); --wash: rgba(11,11,11,0.04);
+    --accent: #2a78d6; --accent-ink: #ffffff; --good: #006300; --bad: #d03b3b; --warn-bg: #fff6df; --warn-ink: #6b4a00;
+    --track: #d6d5ce;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.12); --wash: rgba(255,255,255,0.05);
+      --accent: #3987e5; --accent-ink: #ffffff; --good: #0ca30c; --bad: #e66767; --warn-bg: #2b2210; --warn-ink: #f2cf7a;
+      --track: #44443f;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.12); --wash: rgba(255,255,255,0.05);
+    --accent: #3987e5; --accent-ink: #ffffff; --good: #0ca30c; --bad: #e66767; --warn-bg: #2b2210; --warn-ink: #f2cf7a;
+    --track: #44443f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 120px; }
+  a { color: var(--accent); }
+  .back { font-size: 13.5px; color: var(--ink-2); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  h1 { font-size: 26px; line-height: 1.2; margin: 10px 0 2px; font-weight: 650; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+  .context { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; padding: 14px 18px; margin: 18px 0 14px; }
+  .context .px { font-size: 22px; font-weight: 650; }
+  .context .meta { font-size: 13px; color: var(--ink-2); }
+  .demo { font-size: 12px; color: var(--warn-ink); background: var(--warn-bg); border-radius: 6px; padding: 1px 7px; }
+  .context .demo { font-size: 12.5px; color: var(--warn-ink); background: var(--warn-bg); border-radius: 6px; padding: 2px 8px; }
+
+  /* sign in */
+  .signin { padding: 22px 22px 20px; margin-top: 18px; }
+  .signin h2 { font-size: 18px; margin: 0 0 6px; }
+  .signin p { margin: 0 0 14px; color: var(--ink-2); font-size: 14px; }
+  .step { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--grid); }
+  .step .n { width: 26px; height: 26px; border-radius: 50%; background: var(--wash); border: 1px solid var(--border); display: grid; place-items: center; font-size: 13px; font-weight: 650; }
+  .step h3 { font-size: 15px; margin: 2px 0 6px; }
+  .step ol { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 13.5px; }
+  .step li { margin: 2px 0; }
+  .fine { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+
+  .btn { font: inherit; font-size: 14px; font-weight: 600; border-radius: 9px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--wash); }
+  .btn.primary { background: var(--ink); color: var(--page); border-color: var(--ink); }
+  .btn.primary:hover { opacity: .88; background: var(--ink); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn:focus-visible, input:focus-visible, .switch input:focus-visible + .slider { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .linkbtn { font: inherit; font-size: 13px; color: var(--ink-2); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+
+  input[type=text], input[type=password], input[type=number], input[type=date] {
+    font: inherit; font-size: 15px; color: var(--ink); background: var(--page); border: 1px solid var(--axis); border-radius: 8px; padding: 8px 10px; min-width: 0;
+  }
+  input[type=number] { width: 84px; font-variant-numeric: tabular-nums; }
+  input.money { width: 120px; }
+  input[type=password] { width: 100%; }
+  input.invalid { border-color: var(--bad); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-2); cursor: pointer; }
+  .check input { width: 16px; height: 16px; accent-color: var(--ink); }
+
+  /* rules */
+  .status { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 6px 0 12px; }
+  .rule { padding: 16px 18px; margin-bottom: 12px; }
+  .rule-head { display: flex; align-items: center; gap: 12px; }
+  .num { flex: none; width: 26px; height: 26px; border-radius: 7px; background: var(--wash); border: 1px solid var(--border); display: grid; place-items: center; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .rule-title { flex: 1; font-weight: 650; font-size: 15.5px; }
+  .rule-body { margin: 12px 0 0 38px; }
+  .rule.off .rule-body { opacity: .5; }
+  .rule-text { font-size: 14.5px; }
+  .hint { font-size: 13px; color: var(--ink-2); margin-top: 8px; }
+  .hint.warn { color: var(--warn-ink); background: var(--warn-bg); border-radius: 8px; padding: 6px 10px; }
+  .err { font-size: 13px; color: var(--bad); margin-top: 6px; }
+  .switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .slider { width: 40px; height: 24px; border-radius: 12px; background: var(--track); position: relative; transition: background .15s; }
+  .slider::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .15s; }
+  .switch input:checked + .slider { background: var(--accent); }
+  .switch input:checked + .slider::after { transform: translateX(16px); }
+  .dates { margin-top: 12px; display: grid; gap: 8px; }
+  .date-row { display: grid; grid-template-columns: 160px 1fr auto; gap: 8px; align-items: center; }
+  .date-row input[type=text] { width: 100%; }
+  .icon-btn { font: inherit; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+  .icon-btn:hover { background: var(--wash); color: var(--ink); }
+  .add { margin-top: 8px; }
+
+  /* save bar */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--border); }
+  .bar-in { max-width: 760px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .bar-msg { font-size: 13.5px; color: var(--ink-2); min-height: 20px; }
+  .bar-msg.ok { color: var(--good); } .bar-msg.bad { color: var(--bad); }
+  .bar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 0; }
+  .loading { padding: 30px; text-align: center; color: var(--muted); }
+  [hidden] { display: none !important; }
+  @media (max-width: 560px) {
+    .rule-body { margin-left: 0; }
+    .date-row { grid-template-columns: 1fr auto; }
+    .date-row input[type=text] { grid-column: 1 / -1; grid-row: 2; }
+    h1 { font-size: 23px; }
+  }
+
+  /* stock tabs */
+  .stock-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 8px; margin: 0 0 6px; }
+  .stab { flex: 0 0 auto; font: inherit; text-align: left; color: var(--ink); background: transparent; border: 1px solid var(--border); border-radius: 12px; padding: 8px 14px; cursor: pointer; }
+  .stab:hover { background: var(--wash); }
+  .stab[aria-selected="true"] { background: var(--surface); border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .stab .t-name { display: block; font-weight: 600; font-size: 14px; }
+  .stab .t-meta { display: block; font-size: 12px; color: var(--muted); }
+  .stab.off .t-name { color: var(--muted); }
+  .stab .dot-err { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--bad); margin-left: 6px; vertical-align: 2px; }
+  .stab.add { border-style: dashed; color: var(--ink-2); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; }
+  .stab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .stock-head { padding: 14px 18px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+  .stock-head .sh-name { font-size: 18px; font-weight: 650; }
+  .stock-head .sh-meta { font-size: 13px; color: var(--ink-2); }
+  .stock-head .sh-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .danger { color: var(--bad); }
+  .addform { padding: 18px; margin-bottom: 12px; }
+  .addform h3 { margin: 0 0 4px; font-size: 16px; }
+  .addform .grid { display: grid; grid-template-columns: 1fr 1.4fr 110px; gap: 10px; margin-top: 12px; }
+  .addform label { display: grid; gap: 4px; font-size: 12.5px; color: var(--ink-2); }
+  .addform input[type=text], .addform select { width: 100%; }
+  select { font: inherit; font-size: 15px; color: var(--ink); background: var(--page); border: 1px solid var(--axis); border-radius: 8px; padding: 8px 10px; }
+  .examples { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .examples button { font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+  @media (max-width: 560px) { .addform .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← Dashboard</a>
+  <h1>Alert settings</h1>
+  <div class="sub" id="sub"></div>
+
+  <!-- Sign in -->
+  <section class="card signin" id="signin" hidden>
+    <h2>Sign in with your GitHub key</h2>
+    <p>This page saves your stocks and rules straight into your private repository. It needs a GitHub access key that can only reach your alert repositories. You do this once per device.</p>
+    <div class="step">
+      <div class="n">1</div>
+      <div>
+        <h3>Create a key (skip if you already have one)</h3>
+        <a class="btn" id="token-link" target="_blank" rel="noopener">Create a key on GitHub ↗</a>
+        <ol>
+          <li>Name, expiry and permissions are filled in for you.</li>
+          <li>Under <strong>Repository access</strong> pick <strong>Only select repositories</strong> → <strong id="repo-a"></strong> and <strong>your dashboard repository</strong>.</li>
+          <li>Click <strong>Generate token</strong> and copy it (it starts with <code>github_pat_</code>).</li>
+        </ol>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">2</div>
+      <div>
+        <h3>Paste it here</h3>
+        <form id="signin-form" autocomplete="off">
+          <label for="token" class="sub">GitHub key</label>
+          <input type="password" id="token" placeholder="github_pat_…" spellcheck="false" autocomplete="off">
+          <div class="row" style="margin-top:10px; justify-content:space-between">
+            <label class="check"><input type="checkbox" id="remember" checked> Remember on this device</label>
+            <button class="btn primary" type="submit" id="signin-btn">Sign in</button>
+          </div>
+          <div class="err" id="signin-err" role="alert"></div>
+        </form>
+        <div class="fine">The key stays in this browser and is only sent to GitHub. Sign out to remove it.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Editor -->
+  <section id="editor" hidden>
+    <div class="status"><span id="saved-info"></span><button class="linkbtn" id="signout">Sign out</button></div>
+    <div id="loading" class="loading">Loading your rules…</div>
+    <div id="workspace" hidden>
+      <div class="stock-tabs" id="tabs" role="tablist" aria-label="Your stocks"></div>
+
+      <!-- add a stock -->
+      <form class="card addform" id="addform" hidden novalidate>
+        <h3>Add a stock</h3>
+        <div class="sub">Use the symbol Yahoo Finance uses. Prices appear after the next check.</div>
+        <div class="grid">
+          <label>Symbol<input type="text" id="add-ticker" placeholder="e.g. SU.PA" autocapitalize="characters" spellcheck="false"></label>
+          <label>Name<input type="text" id="add-name" placeholder="e.g. Schneider Electric"></label>
+          <label>Currency<select id="add-cur"><option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option></select></label>
+        </div>
+        <div class="examples">Paris shares end in <code>.PA</code> (AI.PA, SU.PA), US shares have no ending (APD, ECL). Look one up on <a href="https://finance.yahoo.com/lookup" target="_blank" rel="noopener">Yahoo Finance ↗</a>.</div>
+        <div class="err" id="add-err" role="alert"></div>
+        <div class="row" style="margin-top:12px; justify-content:flex-end">
+          <button type="button" class="btn" id="add-cancel">Cancel</button>
+          <button type="submit" class="btn primary">Add stock</button>
+        </div>
+      </form>
+
+      <div id="stockpanel">
+        <div class="card stock-head">
+          <div>
+            <div class="sh-name" id="sh-name"></div>
+            <div class="sh-meta" id="sh-meta"></div>
+          </div>
+          <div class="sh-actions">
+            <label class="switch"><input type="checkbox" id="stock-on" aria-label="Alerts for this stock on or off"><span class="slider"></span><span id="stock-on-label">Alerts on</span></label>
+            <button type="button" class="linkbtn danger" id="remove">Remove</button>
+          </div>
+        </div>
+
+        <form id="rules-form" novalidate>
+          <div class="card rule" data-rule="up_streak">
+            <div class="rule-head"><span class="num">1</span><span class="rule-title">Rises several sessions in a row</span>
+              <label class="switch"><input type="checkbox" data-k="enabled" aria-label="Rule 1 on or off"><span class="slider"></span></label></div>
+            <div class="rule-body">
+              <div class="rule-text row">Alert after <input type="number" min="2" max="30" step="1" data-k="sessions" aria-label="Number of higher closes"> higher closes in a row</div>
+              <div class="hint" data-hint></div><div class="err" data-err></div>
+            </div>
+          </div>
+          <div class="card rule" data-rule="down_streak">
+            <div class="rule-head"><span class="num">2</span><span class="rule-title">Falls several sessions in a row</span>
+              <label class="switch"><input type="checkbox" data-k="enabled" aria-label="Rule 2 on or off"><span class="slider"></span></label></div>
+            <div class="rule-body">
+              <div class="rule-text row">Alert after <input type="number" min="2" max="30" step="1" data-k="sessions" aria-label="Number of lower closes"> lower closes in a row</div>
+              <div class="hint" data-hint></div><div class="err" data-err></div>
+            </div>
+          </div>
+          <div class="card rule" data-rule="price_above">
+            <div class="rule-head"><span class="num">3</span><span class="rule-title">Price goes above a level</span>
+              <label class="switch"><input type="checkbox" data-k="enabled" aria-label="Rule 3 on or off"><span class="slider"></span></label></div>
+            <div class="rule-body">
+              <div class="rule-text row">Alert when the price rises above <span class="cur"></span><input type="number" class="money" min="0" step="0.01" data-k="price" aria-label="Upper price level"></div>
+              <div class="hint" data-hint></div><div class="err" data-err></div>
+            </div>
+          </div>
+          <div class="card rule" data-rule="price_below">
+            <div class="rule-head"><span class="num">4</span><span class="rule-title">Price goes below a level</span>
+              <label class="switch"><input type="checkbox" data-k="enabled" aria-label="Rule 4 on or off"><span class="slider"></span></label></div>
+            <div class="rule-body">
+              <div class="rule-text row">Alert when the price falls below <span class="cur"></span><input type="number" class="money" min="0" step="0.01" data-k="price" aria-label="Lower price level"></div>
+              <div class="hint" data-hint></div><div class="err" data-err></div>
+            </div>
+          </div>
+          <div class="card rule" data-rule="results">
+            <div class="rule-head"><span class="num">5</span><span class="rule-title">Before results are published</span>
+              <label class="switch"><input type="checkbox" data-k="enabled" aria-label="Rule 5 on or off"><span class="slider"></span></label></div>
+            <div class="rule-body">
+              <div class="rule-text row">Alert <input type="number" min="1" max="20" step="1" data-k="days_before" aria-label="Trading days before"> trading days before each results date</div>
+              <div class="dates" id="dates"></div>
+              <button type="button" class="btn add" id="add-date">+ Add a date</button>
+              <div style="margin-top:10px"><label class="check"><input type="checkbox" data-k="use_yahoo"> Also use Yahoo Finance's estimated dates when a date isn't listed here</label></div>
+              <div class="hint" data-hint></div><div class="err" data-err></div>
+              <div class="fine">Official dates: <a id="official" target="_blank" rel="noopener">investor calendar ↗</a></div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="tools">
+        <button type="button" class="btn" id="run-now">Check now</button>
+        <button type="button" class="btn" id="test-email">Send me a test email</button>
+        <a class="btn" id="runs-link" target="_blank" rel="noopener">See checks on GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <div class="bar-in">
+    <div class="bar-msg" id="bar-msg" role="status" aria-live="polite"></div>
+    <div class="bar-actions">
+      <button class="btn" type="button" id="revert" hidden>Undo changes</button>
+      <button class="btn primary" type="button" id="save" disabled>Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SETTINGS = {"repo": "Mben30/AL-alerts", "workflow": "stock-alert.yml"};
+
+(function () {
+  const S = SETTINGS || {};
+  const REPO = (S.repo || "").trim();
+  const WORKFLOW = S.workflow || "stock-alert.yml";
+  const API = "https://api.github.com";
+  const STORE_KEY = "al-alerts-key:" + REPO;
+  const RULES_PATH = "rules.json";
+  const MAX_STOCKS = 12;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const day = (iso, o = { weekday: "short", day: "numeric", month: "short", year: "numeric" }) => new Date(iso + "T12:00:00").toLocaleDateString("en-GB", o);
+  const fmtFor = (c) => new Intl.NumberFormat("en-GB", { style: "currency", currencyDisplay: "narrowSymbol", currency: c || "EUR" });
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+
+  let token = null, branch = "main", sha = null, fileData = { version: 2 };
+  let saved = null, current = null, sel = 0, market = { stocks: {} };
+
+  const store = {
+    get() { try { return sessionStorage.getItem(STORE_KEY) || localStorage.getItem(STORE_KEY); } catch { return null; } },
+    set(v, remember) { try { (remember ? localStorage : sessionStorage).setItem(STORE_KEY, v); } catch {} },
+    clear() { try { sessionStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY); } catch {} },
+  };
+
+  async function gh(path, opts = {}) {
+    const res = await fetch(API + path, {
+      ...opts,
+      headers: { Authorization: "Bearer " + token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
+                 ...(opts.body ? { "Content-Type": "application/json" } : {}) },
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const e = new Error(body.message || res.statusText); e.status = res.status; throw e;
+    }
+    return res.status === 204 ? null : res.json();
+  }
+  const b64decode = (b) => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g, "")), (c) => c.charCodeAt(0)));
+  const b64encode = (s) => { const bytes = new TextEncoder().encode(s); let bin = ""; bytes.forEach((x) => bin += String.fromCharCode(x)); return btoa(bin); };
+
+  function explain(e, what) {
+    if (e.status === 401) return "GitHub didn't accept this key — it may be mistyped or expired. Create a new one (step 1).";
+    if (e.status === 404) return `This key can't see ${REPO}. When creating it, choose “Only select repositories” and tick ${REPO.split("/")[1]}.`;
+    if (e.status === 403) return what === "actions"
+      ? "Your key isn't allowed to start checks (it needs Actions: Read and write). Your saved rules still apply at the next hourly check."
+      : "Your key can read but not save. It needs Contents: Read and write on " + REPO.split("/")[1] + ".";
+    if (e.status === 409 || e.status === 422) return "Your rules changed somewhere else in the meantime. Reload the page and try again.";
+    return "Something went wrong talking to GitHub: " + e.message;
+  }
+
+  // ── header ────────────────────────────────────────────────────────────────
+  $("sub").textContent = `Saved to ${REPO || "(repository not set)"}`;
+  $("repo-a").textContent = REPO.split("/")[1] || "your alerts repository";
+  $("token-link").href = "https://github.com/settings/personal-access-tokens/new?" + new URLSearchParams({
+    name: "Stock alert settings", description: "Lets the stock alert settings page save rules, and publishes the dashboard.",
+    expires_in: "365", contents: "write", actions: "write",
+  });
+  $("runs-link").href = `https://github.com/${REPO}/actions`;
+
+  fetch("data.json", { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((d) => {
+    if (!d) return;
+    market = d.stocks ? d : { stocks: { [d.stock?.ticker]: d } };   // older single-stock data.json
+    market.demo = d.demo; market.failures = d.failures || [];
+    if (current) { renderTabs(); renderStock(); }
+  }).catch(() => {});
+
+  // ── sign in ───────────────────────────────────────────────────────────────
+  async function start(t) {
+    token = t;
+    const repo = await gh(`/repos/${REPO}`);
+    branch = repo.default_branch || "main";
+    await load();
+  }
+  $("signin-form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const t = $("token").value.trim();
+    $("signin-err").textContent = "";
+    if (!t) { $("signin-err").textContent = "Paste your key first."; return; }
+    $("signin-btn").disabled = true; $("signin-btn").textContent = "Checking…";
+    try {
+      show("editor");
+      await start(t);
+      store.set(t, $("remember").checked);
+      $("token").value = "";
+    } catch (e) {
+      token = null; show("signin");
+      $("signin-err").textContent = explain(e, "contents");
+    } finally { $("signin-btn").disabled = false; $("signin-btn").textContent = "Sign in"; }
+  });
+  $("signout").addEventListener("click", () => {
+    if (dirty() && !confirm("You have unsaved changes. Sign out anyway?")) return;
+    store.clear(); token = null; current = saved = null; show("signin");
+  });
+  function show(which) {
+    $("signin").hidden = which !== "signin";
+    $("editor").hidden = which !== "editor";
+    $("bar").hidden = which !== "editor";
+  }
+
+  // ── data model ────────────────────────────────────────────────────────────
+  const DEFAULT_RULES = () => ({
+    up_streak: { enabled: true, sessions: 5 }, down_streak: { enabled: true, sessions: 5 },
+    price_above: { enabled: false, price: null }, price_below: { enabled: false, price: null },
+    results: { enabled: true, days_before: 2, use_yahoo: true, dates: [] },
+  });
+  function normalize(st) {
+    const rules = DEFAULT_RULES();
+    for (const k of Object.keys(rules)) rules[k] = { ...rules[k], ...((st.rules || {})[k] || {}) };
+    rules.results.dates = (rules.results.dates || []).map((d) => ({ date: d.date || "", event: d.event || "" }));
+    return { ticker: String(st.ticker || "").toUpperCase(), name: st.name || st.ticker, currency: st.currency || guessCurrency(st.ticker || ""),
+             enabled: st.enabled !== false, rules };
+  }
+  function guessCurrency(t) {
+    const sfx = t.includes(".") ? t.split(".").pop().toUpperCase() : "";
+    return { PA: "EUR", AS: "EUR", BR: "EUR", MI: "EUR", MC: "EUR", DE: "EUR", F: "EUR", SW: "CHF", L: "GBP" }[sfx] || (sfx ? "EUR" : "USD");
+  }
+  const cur = () => current[sel];
+
+  async function load() {
+    $("loading").hidden = false; $("workspace").hidden = true;
+    try {
+      const f = await gh(`/repos/${REPO}/contents/${RULES_PATH}?ref=${encodeURIComponent(branch)}`);
+      sha = f.sha;
+      fileData = JSON.parse(b64decode(f.content));
+    } catch (e) {
+      if (e.status !== 404) throw e;
+      sha = null; fileData = { version: 2, stocks: [] };
+    }
+    let stocks = fileData.stocks;
+    if (!stocks) stocks = [{ ticker: "AI.PA", name: "Air Liquide", currency: "EUR", rules: fileData.rules || {} }];  // version 1
+    current = stocks.map(normalize);
+    saved = clone(current);
+    const want = decodeURIComponent(location.hash.slice(1)).toUpperCase();
+    sel = Math.max(0, current.findIndex((s) => s.ticker === want));
+    $("saved-info").textContent = fileData.updated_at
+      ? "Last saved " + new Date(fileData.updated_at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
+      : (sha ? "Rules loaded from " + REPO : "No rules saved yet — these are the starting values");
+    renderTabs(); renderStock();
+    $("loading").hidden = true; $("workspace").hidden = false;
+  }
+
+  // ── tabs ──────────────────────────────────────────────────────────────────
+  function renderTabs() {
+    const errs = current.map((s) => Object.keys(validateStock(s)).length > 0);
+    $("tabs").innerHTML = current.map((s, i) => `
+      <button type="button" class="stab${s.enabled ? "" : " off"}" role="tab" data-i="${i}" aria-selected="${i === sel && $("addform").hidden}">
+        <span class="t-name">${esc(s.name)}${errs[i] ? '<span class="dot-err" title="Needs fixing"></span>' : ""}</span>
+        <span class="t-meta">${esc(s.ticker)}${s.enabled ? "" : " · off"}</span>
+      </button>`).join("") +
+      (current.length < MAX_STOCKS ? `<button type="button" class="stab add" id="add-stock" aria-selected="${!$("addform").hidden}">+ Add a stock</button>` : "");
+  }
+  $("tabs").addEventListener("click", (ev) => {
+    const b = ev.target.closest(".stab");
+    if (!b) return;
+    if (b.id === "add-stock") { openAdd(); return; }
+    sel = +b.dataset.i; closeAdd();
+    history.replaceState(null, "", "#" + cur().ticker);
+    renderTabs(); renderStock();
+  });
+
+  // ── one stock ─────────────────────────────────────────────────────────────
+  function renderStock() {
+    const st = cur(); if (!st) return;
+    const m = market.stocks?.[st.ticker];
+    $("sh-name").textContent = `${st.name}`;
+    const px = m?.last?.price;
+    $("sh-meta").innerHTML = `${esc(st.ticker)}${m?.market ? " · " + esc(m.market) : ""} · ${esc(st.currency)}`
+      + (px != null ? ` · <strong>${fmtFor(st.currency).format(px)}</strong> ${m.liveSession ? "today so far" : "at the last close"}` : " · prices appear after the next check")
+      + (market.demo ? ' · <span class="demo">sample data</span>' : "")
+      + ((market.failures || []).some((f) => f.ticker === st.ticker)
+          ? `<div class="err">Prices couldn't be loaded for ${esc(st.ticker)} on the last check — is the symbol right? Check it on <a href="https://finance.yahoo.com/lookup" target="_blank" rel="noopener">Yahoo Finance</a>.</div>` : "");
+    $("stock-on").checked = st.enabled;
+    $("stock-on-label").textContent = st.enabled ? "Alerts on" : "Alerts off";
+    $("rules-form").style.opacity = st.enabled ? "" : ".55";
+    $("official").href = m?.calendar || `https://finance.yahoo.com/quote/${encodeURIComponent(st.ticker)}/`;
+    const sym = fmtFor(st.currency).formatToParts(0).find((p) => p.type === "currency")?.value || "";
+    document.querySelectorAll(".rule").forEach((card) => {
+      const r = st.rules[card.dataset.rule];
+      card.querySelectorAll("[data-k]").forEach((inp) => {
+        const k = inp.dataset.k;
+        if (inp.type === "checkbox") inp.checked = !!r[k];
+        else inp.value = r[k] == null ? "" : r[k];
+      });
+      card.classList.toggle("off", !r.enabled);
+      card.querySelectorAll(".cur").forEach((c) => c.textContent = sym);
+    });
+    renderDates(); renderHints(); update();
+  }
+
+  function renderDates() {
+    $("dates").innerHTML = cur().rules.results.dates.map((d, i) => `
+      <div class="date-row">
+        <input type="date" value="${esc(d.date)}" data-i="${i}" data-f="date" aria-label="Results date ${i + 1}">
+        <input type="text" value="${esc(d.event)}" data-i="${i}" data-f="event" placeholder="e.g. Half-year results" aria-label="Event name ${i + 1}">
+        <button type="button" class="icon-btn" data-del="${i}" aria-label="Remove date ${i + 1}">✕</button>
+      </div>`).join("") || '<div class="hint">No dates listed yet.</div>';
+  }
+
+  function weekdaysBack(iso, n) {
+    const d = new Date(iso + "T12:00:00");
+    while (n > 0) { d.setDate(d.getDate() - 1); if (d.getDay() !== 0 && d.getDay() !== 6) n--; }
+    return d.toISOString().slice(0, 10);
+  }
+
+  function renderHints() {
+    const st = cur(), R = st.rules, m = market.stocks?.[st.ticker], money = (v) => fmtFor(st.currency).format(v);
+    const hint = (id, html, warn) => { const el = document.querySelector(`.rule[data-rule="${id}"] [data-hint]`); el.innerHTML = html || ""; el.classList.toggle("warn", !!warn); el.hidden = !html; };
+    const streak = m?.streak, px = m?.last?.price;
+    for (const [id, dir] of [["up_streak", "up"], ["down_streak", "down"]]) {
+      const n = Number(R[id].sessions), k = streak ? streak[dir] : null, w = dir === "up" ? "higher" : "lower";
+      hint(id, k == null ? "" : (k >= n ? `Right now: ${k} ${w} closes in a row — this streak is already counted.`
+        : `Right now: ${k} ${w} close${k === 1 ? "" : "s"} in a row. Each session counts once it has closed.`));
+    }
+    for (const [id, above] of [["price_above", true], ["price_below", false]]) {
+      const lvl = Number(R[id].price);
+      if (!px || !R[id].price) { hint(id, px ? `Now ${money(px)}.` : ""); continue; }
+      const already = above ? px > lvl : px < lvl, gap = Math.abs(px / lvl - 1) * 100;
+      hint(id, already
+        ? `The price (${money(px)}) is already ${above ? "above" : "below"} ${money(lvl)}. You'll be alerted the next time it crosses ${above ? "up" : "down"} through this level.`
+        : `Now ${money(px)} — ${gap.toFixed(1)}% ${above ? "below" : "above"} this level.`, already);
+    }
+    const days = Number(R.results.days_before), today = new Date().toISOString().slice(0, 10);
+    const next = R.results.dates.filter((d) => d.date && d.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
+    const est = (m?.nextResults || [])[0];
+    const alertDay = next && days >= 1 ? weekdaysBack(next.date, days) : null;
+    hint("results", next && days >= 1
+      ? `Next: ${esc(next.event || "Results")}, ${day(next.date)} → ` + (alertDay > today ? `alert on ${day(alertDay)}.`
+          : next.date > today ? "it's within the alert window, so you're alerted at the next check (once)." : "today.")
+      : est ? `Next (${est.source === "yahoo" ? "Yahoo Finance estimate" : "listed"}): ${day(est.date)}. Add the official date when it's announced.`
+      : "No upcoming date yet. Add it when the company announces it" + (R.results.use_yahoo ? " — Yahoo's estimate is used meanwhile." : "."));
+  }
+
+  // ── editing ───────────────────────────────────────────────────────────────
+  $("rules-form").addEventListener("input", (ev) => {
+    const t = ev.target, R = cur().rules;
+    if (t.dataset.f) R.results.dates[+t.dataset.i][t.dataset.f] = t.value;
+    else if (t.dataset.k) {
+      const id = t.closest(".rule").dataset.rule;
+      R[id][t.dataset.k] = t.type === "checkbox" ? t.checked : (t.value === "" ? null : Number(t.value));
+      t.closest(".rule").classList.toggle("off", !R[id].enabled);
+    }
+    renderHints(); update();
+  });
+  $("rules-form").addEventListener("click", (ev) => {
+    const del = ev.target.closest("[data-del]");
+    if (del) { cur().rules.results.dates.splice(+del.dataset.del, 1); renderDates(); renderHints(); update(); }
+  });
+  $("add-date").addEventListener("click", () => {
+    cur().rules.results.dates.push({ date: "", event: "" });
+    renderDates(); update();
+    const rows = $("dates").querySelectorAll("input[type=date]"); rows[rows.length - 1]?.focus();
+  });
+  $("stock-on").addEventListener("change", (e) => { cur().enabled = e.target.checked; renderTabs(); renderStock(); });
+  $("remove").addEventListener("click", () => {
+    if (current.length === 1) { setMsg("Keep at least one stock — switch its alerts off instead.", "bad", true); return; }
+    if (!confirm(`Remove ${cur().name} and its rules? (Takes effect when you save.)`)) return;
+    current.splice(sel, 1); sel = Math.max(0, sel - 1);
+    renderTabs(); renderStock();
+  });
+
+  // ── add a stock ───────────────────────────────────────────────────────────
+  function openAdd() {
+    $("addform").hidden = false; $("stockpanel").hidden = true; $("add-err").textContent = "";
+    $("add-ticker").value = ""; $("add-name").value = ""; $("add-cur").value = "EUR";
+    renderTabs(); $("add-ticker").focus();
+  }
+  function closeAdd() { $("addform").hidden = true; $("stockpanel").hidden = false; }
+  $("add-ticker").addEventListener("input", (e) => { $("add-cur").value = guessCurrency(e.target.value.trim()); });
+  $("add-cancel").addEventListener("click", () => { closeAdd(); renderTabs(); renderStock(); });
+  $("addform").addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const t = $("add-ticker").value.trim().toUpperCase(), name = $("add-name").value.trim();
+    if (!/^[A-Z0-9][A-Z0-9.\-=^]{0,19}$/.test(t)) { $("add-err").textContent = "Enter the symbol as Yahoo Finance shows it, e.g. SU.PA or ECL."; return; }
+    if (current.some((s) => s.ticker === t)) { $("add-err").textContent = `${t} is already in your list.`; return; }
+    current.push(normalize({ ticker: t, name: name || t, currency: $("add-cur").value, rules: DEFAULT_RULES() }));
+    sel = current.length - 1; closeAdd();
+    history.replaceState(null, "", "#" + t);
+    renderTabs(); renderStock();
+    setMsg(`${name || t} added with the standard rules — adjust them, then save.`, "", true);
+  });
+
+  // ── validation & save bar ─────────────────────────────────────────────────
+  function validateStock(st) {
+    const errs = {}, R = st.rules;
+    if (!st.enabled) return errs;
+    const whole = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+    if (R.up_streak.enabled && !whole(R.up_streak.sessions, 2, 30)) errs.up_streak = "Use a whole number from 2 to 30.";
+    if (R.down_streak.enabled && !whole(R.down_streak.sessions, 2, 30)) errs.down_streak = "Use a whole number from 2 to 30.";
+    for (const id of ["price_above", "price_below"])
+      if (R[id].enabled && !(R[id].price > 0)) errs[id] = "Enter a price level, or switch this rule off.";
+    if (R.price_above.enabled && R.price_below.enabled && R.price_above.price > 0 && R.price_below.price > 0
+        && R.price_below.price >= R.price_above.price) errs.price_below = "The lower level should be below the upper level (rule 3).";
+    if (R.results.enabled) {
+      if (!whole(R.results.days_before, 1, 20)) errs.results = "Use a whole number of trading days from 1 to 20.";
+      else if (R.results.dates.some((d) => !/^\d{4}-\d{2}-\d{2}$/.test(d.date))) errs.results = "Each row needs a date (or remove the empty row).";
+    }
+    return errs;
+  }
+  const dirty = () => current && saved && JSON.stringify(current) !== JSON.stringify(saved);
+
+  function update() {
+    const errs = validateStock(cur());
+    document.querySelectorAll(".rule").forEach((card) => {
+      const e = errs[card.dataset.rule] || "";
+      card.querySelector("[data-err]").textContent = e;
+      card.querySelectorAll("input[type=number]").forEach((i) => i.classList.toggle("invalid", !!e));
+    });
+    const bad = current.findIndex((s) => Object.keys(validateStock(s)).length > 0);
+    const d = dirty();
+    $("save").disabled = !d || bad >= 0 || !current.some((s) => s.enabled);
+    $("revert").hidden = !d;
+    if (d) setMsg(bad >= 0 ? `Fix the highlighted rule${bad !== sel ? " on " + current[bad].name : ""} to save.`
+      : !current.some((s) => s.enabled) ? "Switch on at least one stock to save." : "You have unsaved changes.", bad >= 0 ? "bad" : "");
+    else if (!$("bar-msg").dataset.keep) setMsg("All changes saved.", "");
+    const tabsErr = [...document.querySelectorAll(".stab[data-i]")].map((b) => !!b.querySelector(".dot-err"));
+    if (current.some((s, i) => (Object.keys(validateStock(s)).length > 0) !== tabsErr[i])) renderTabs();
+  }
+  function setMsg(text, cls, keep) {
+    const m = $("bar-msg"); m.textContent = text; m.className = "bar-msg" + (cls ? " " + cls : "");
+    if (keep) m.dataset.keep = "1"; else delete m.dataset.keep;
+  }
+  $("revert").addEventListener("click", () => { current = clone(saved); sel = Math.min(sel, current.length - 1); closeAdd(); renderTabs(); renderStock(); });
+  window.addEventListener("beforeunload", (e) => { if (dirty()) { e.preventDefault(); e.returnValue = ""; } });
+
+  $("save").addEventListener("click", async () => {
+    if (current.some((s) => Object.keys(validateStock(s)).length)) return;
+    const out = clone(current).map((s) => {
+      s.rules.results.dates = s.rules.results.dates.filter((d) => d.date).sort((a, b) => a.date.localeCompare(b.date))
+        .map((d) => ({ date: d.date, event: (d.event || "").trim() || "Results" }));
+      return s;
+    });
+    const { rules: _old, ...rest } = fileData;
+    const body = { ...rest, version: 2, stocks: out, updated_at: new Date().toISOString(), updated_by: "settings page" };
+    $("save").disabled = true; setMsg("Saving…", "");
+    try {
+      const res = await gh(`/repos/${REPO}/contents/${RULES_PATH}`, { method: "PUT", body: JSON.stringify({
+        message: "Update stock alert rules from the settings page", branch,
+        content: b64encode(JSON.stringify(body, null, 2) + "\n"), ...(sha ? { sha } : {}),
+      }) });
+      sha = res.content.sha; fileData = body;
+      saved = clone(out); current = clone(out);
+      renderTabs(); renderStock();
+      $("saved-info").textContent = "Last saved just now";
+      try {
+        await gh(`/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, { method: "POST",
+          body: JSON.stringify({ ref: branch, inputs: { test_email: "false" } }) });
+        setMsg("Saved. A check is running with your new rules — the dashboard updates in about a minute.", "ok", true);
+      } catch {
+        setMsg("Saved. Your alerts use these rules from the next hourly check.", "ok", true);
+      }
+    } catch (e) {
+      setMsg(explain(e, "contents"), "bad", true); $("save").disabled = false;
+    }
+  });
+
+  // ── check now / test email ────────────────────────────────────────────────
+  async function dispatch(test, btn) {
+    btn.disabled = true;
+    try {
+      await gh(`/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, { method: "POST",
+        body: JSON.stringify({ ref: branch, inputs: { test_email: test ? "true" : "false" } }) });
+      setMsg(test ? "Test email requested — it arrives in about a minute." : "Check started — results and the dashboard update in about a minute.", "ok", true);
+    } catch (e) { setMsg(explain(e, "actions"), "bad", true); }
+    finally { setTimeout(() => btn.disabled = false, 4000); }
+  }
+  $("run-now").addEventListener("click", (e) => {
+    if (dirty()) { setMsg("Save your changes first, then check.", "bad", true); return; }
+    dispatch(false, e.currentTarget);
+  });
+  $("test-email").addEventListener("click", (e) => dispatch(true, e.currentTarget));
+
+  // ── boot ──────────────────────────────────────────────────────────────────
+  if (!REPO) { $("signin").hidden = false; $("signin-err").textContent = "This page doesn't know which repository to use."; return; }
+  const remembered = store.get();
+  if (remembered) {
+    show("editor");
+    start(remembered).catch((e) => {
+      store.clear(); token = null; show("signin");
+      $("signin-err").textContent = explain(e, "contents") + " Please sign in again.";
+    });
+  } else {
+    show("signin");
+  }
+})();
+</script>
+</body>
+</html>
